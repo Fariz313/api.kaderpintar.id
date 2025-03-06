@@ -10,12 +10,31 @@ class RecordPtmController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $records = RecordPtm::all();
-        return view('records_ptm.index', compact('records'));
-    }
+        // Start with a base query
+        $query = RecordPtm::select('records_ptm.*','users.name')->join('users','users.id','=','records_ptm.user_id');
 
+        // Check if the search parameter is provided
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+
+            // Apply search with priority: name > address > phone
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%') // Priority 1: name
+                    ->orWhere('address', 'like', '%' . $searchTerm . '%') // Priority 2: address
+                    ->orWhere('phone', 'like', '%' . $searchTerm . '%'); // Priority 3: phone
+            });
+        }
+
+        // Paginate the results
+        $users = $query->paginate(10);
+
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => $users,
+        ], 200);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -40,8 +59,10 @@ class RecordPtmController extends Controller
 
         RecordPtm::create($request->all());
 
-        return redirect()->route('records_ptm.index')
-                         ->with('success', 'Record created successfully.');
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => [],
+        ], 200);
     }
 
     /**
@@ -83,11 +104,13 @@ class RecordPtmController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(RecordPtm $recordPtm)
+    public function destroy(Request $request,$id)
     {
-        $recordPtm->delete();
+        RecordPtm::findOrFail($id)->delete();
 
-        return redirect()->route('records_ptm.index')
-                         ->with('success', 'Record deleted successfully.');
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => [],
+        ], 200);
     }
 }

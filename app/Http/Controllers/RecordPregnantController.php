@@ -10,10 +10,30 @@ class RecordPregnantController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $records = RecordPregnant::all();
-        return view('records_pregnant.index', compact('records'));
+        // Start with a base query
+        $query = RecordPregnant::select('record_pregnants.*','users.name')->join('users','users.id','=','record_pregnants.user_id');
+
+        // Check if the search parameter is provided
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+
+            // Apply search with priority: name > address > phone
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%') // Priority 1: name
+                    ->orWhere('address', 'like', '%' . $searchTerm . '%') // Priority 2: address
+                    ->orWhere('phone', 'like', '%' . $searchTerm . '%'); // Priority 3: phone
+            });
+        }
+
+        // Paginate the results
+        $users = $query->paginate(10);
+
+        return response()->json([
+            'message' => 'Users retrieved successfully',
+            'data' => $users,
+        ], 200);
     }
 
     /**
@@ -63,8 +83,10 @@ class RecordPregnantController extends Controller
 
         RecordPregnant::create($request->all());
 
-        return redirect()->route('records-pregnant.index')
-                         ->with('success', 'Record created successfully.');
+        return response()->json([
+            'message' => 'Record retrieved successfully',
+            'data' => [],
+        ], 200);
     }
 
     /**
@@ -133,7 +155,9 @@ class RecordPregnantController extends Controller
     {
         $recordPregnant->delete();
 
-        return redirect()->route('records-pregnant.index')
-                         ->with('success', 'Record deleted successfully.');
+        return response()->json([
+            'message' => 'Record deleted successfully',
+            'data' => [],
+        ], 200);
     }
 }
