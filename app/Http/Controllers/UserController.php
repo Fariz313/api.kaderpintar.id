@@ -14,7 +14,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        // Start with a base query
+        // Start with a base query  
         $query = User::query();
 
         // Check if the search parameter is provided
@@ -163,5 +163,5 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
-    }
+    }   
 }

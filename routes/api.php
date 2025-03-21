@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RecordGiziController;
 use App\Http\Controllers\RecordPregnantController;
 use App\Http\Controllers\RecordPtmController;
 use App\Http\Controllers\UserController;
@@ -8,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('pregnants', RecordPregnantController::class);
 Route::resource('ptm', RecordPtmController::class);
+Route::resource('gizi', RecordGiziController::class);
 Route::resource('users', UserController::class);
 Route::post('user/login', [UserController::class, 'login']);
 
