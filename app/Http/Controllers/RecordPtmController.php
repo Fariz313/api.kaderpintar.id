@@ -13,7 +13,7 @@ class RecordPtmController extends Controller
     public function index(Request $request)
     {
         // Start with a base query
-        $query = RecordPtm::select('records_ptm.*','users.name')->join('users','users.id','=','records_ptm.user_id');
+        $query = RecordPtm::select('records_ptm.*', 'users.name')->join('users', 'users.id', '=', 'records_ptm.user_id');
 
         // Check if the search parameter is provided
         if ($request->has('search')) {
@@ -68,9 +68,15 @@ class RecordPtmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RecordPtm $recordPtm)
+    public function show($id)
     {
-        return view('records_ptm.show', compact('recordPtm'));
+        // Start with a base query
+        $query = RecordPtm::select('records_ptm.*', 'users.name')->join('users', 'users.id', '=', 'records_ptm.user_id');
+
+        // Paginate the results
+        $users = $query->find( $id);
+
+        return response()->json($users, 200);
     }
 
     /**
@@ -98,13 +104,13 @@ class RecordPtmController extends Controller
         $recordPtm->update($request->all());
 
         return redirect()->route('records_ptm.index')
-                         ->with('success', 'Record updated successfully.');
+            ->with('success', 'Record updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         RecordPtm::findOrFail($id)->delete();
 

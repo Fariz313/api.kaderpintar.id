@@ -13,7 +13,7 @@ class RecordGiziController extends Controller
     public function index(Request $request)
     {
         // Start with a base query
-        $query = RecordGizi::select('record_gizi.*','users.name')->join('users','users.id','=','record_gizi.user_id');
+        $query = RecordGizi::select('record_gizi.*', 'users.name')->join('users', 'users.id', '=', 'record_gizi.user_id');
 
         // Check if the search parameter is provided
         if ($request->has('search')) {
@@ -66,9 +66,15 @@ class RecordGiziController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RecordGizi $recordGizi)
+    public function show($id)
     {
-        return view('record_gizi.show', compact('recordGizi'));
+        // Start with a base query
+        $query = RecordGizi::select('record_gizi.*', 'users.name')->join('users', 'users.id', '=', 'record_gizi.user_id');
+
+        // Paginate the results
+        $users = $query->find($id);
+
+        return response()->json($users);
     }
 
     /**
@@ -94,13 +100,13 @@ class RecordGiziController extends Controller
         $recordGizi->update($request->all());
 
         return redirect()->route('record_gizi.index')
-                         ->with('success', 'Record updated successfully.');
+            ->with('success', 'Record updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         RecordGizi::findOrFail($id)->delete();
 

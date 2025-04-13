@@ -92,9 +92,15 @@ class RecordPregnantController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RecordPregnant $recordPregnant)
+    public function show($id)
     {
-        return view('records_pregnant.show', compact('recordPregnant'));
+        // Start with a base query
+        $query = RecordPregnant::select('record_pregnants.*','users.name')->join('users','users.id','=','record_pregnants.user_id');
+
+        // Paginate the results
+        $users = $query->find($id);
+
+        return response()->json($users, 200);
     }
 
     /**
