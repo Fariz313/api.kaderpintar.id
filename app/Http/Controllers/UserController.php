@@ -163,5 +163,11 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
-    }   
+    } 
+    
+    public function createPassword($password)
+    {
+        return response()->json(['message' => 'User registered successfully', 'password' => Hash::make($password)], 201);
+    }
+
 }

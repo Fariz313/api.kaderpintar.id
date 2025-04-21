@@ -12,6 +12,7 @@ Route::resource('ptm', RecordPtmController::class);
 Route::resource('gizi', RecordGiziController::class);
 Route::resource('users', UserController::class);
 Route::post('user/login', [UserController::class, 'login']);
+Route::get('password/{password}', [UserController::class, 'createPassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user/me', function (Request $request) {
