@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RecordPtmExport;
 use App\Models\RecordPtm;
 use Illuminate\Http\Request;
-
+use Maatwebsite\Excel\Facades\Excel;
 class RecordPtmController extends Controller
 {
     /**
@@ -13,7 +14,7 @@ class RecordPtmController extends Controller
     public function index(Request $request)
     {
         // Start with a base query
-        $query = RecordPtm::select('records_ptm.*', 'users.name')->join('users', 'users.id', '=', 'records_ptm.user_id')->orderBy('created_at','desc');
+        $query = RecordPtm::select('records_ptm.*', 'users.name')->join('users', 'users.id', '=', 'records_ptm.user_id')->orderBy('created_at', 'desc');
 
         // Check if the search parameter is provided
         if ($request->has('search')) {
@@ -27,17 +28,16 @@ class RecordPtmController extends Controller
             });
         }
 
-        // Paginate the results
         if ($request->boolean('export')) {
-            $users = $query->get(); // Ambil semua tanpa pagination
+            $export = new RecordPtmExport($query);
+            return Excel::download($export, 'record-ptm.xlsx');
         } else {
-            $users = $query->paginate(10); // Default: paginated
+            $users = $query->paginate(10);
+            return response()->json([
+                'message' => 'Users retrieved successfully',
+                'data' => $users,
+            ], 200);
         }
-
-        return response()->json([
-            'message' => 'Users retrieved successfully',
-            'data' => $users,
-        ], 200);
     }
     /**
      * Show the form for creating a new resource.
@@ -78,7 +78,7 @@ class RecordPtmController extends Controller
         $query = RecordPtm::select('records_ptm.*', 'users.name')->join('users', 'users.id', '=', 'records_ptm.user_id');
 
         // Paginate the results
-        $users = $query->find( $id);
+        $users = $query->find($id);
 
         return response()->json($users, 200);
     }
