@@ -28,7 +28,11 @@ class RecordPtmController extends Controller
         }
 
         // Paginate the results
-        $users = $query->paginate(10);
+        if ($request->boolean('export')) {
+            $users = $query->get(); // Ambil semua tanpa pagination
+        } else {
+            $users = $query->paginate(10); // Default: paginated
+        }
 
         return response()->json([
             'message' => 'Users retrieved successfully',
