@@ -5,7 +5,7 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class RecordPtmExport implements FromCollection, WithHeadings
+class RecordGiziExport implements FromCollection, WithHeadings
 {
     protected $query;
 
@@ -22,18 +22,15 @@ class RecordPtmExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'ID PTM',
-            'ID User',
-            'Nama',
-            'PKM',
-            'Berat',
-            'Tinggi',
-            'BP',
-            'BP2',
-            'GDS',
-            'GDP',
-            'created_at',
-            'updated_at'
+        'id',
+        'user_id',
+        'name',
+        'recorded_by',
+        'weight',
+        'height',
+        'age',
+        'created_at',
+        'updated_at',
         ];
     }
 }

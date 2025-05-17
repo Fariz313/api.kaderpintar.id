@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RecordGiziExport;
 use App\Models\RecordGizi;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RecordGiziController extends Controller
 {
@@ -13,7 +15,17 @@ class RecordGiziController extends Controller
     public function index(Request $request)
     {
         // Start with a base query
-        $query = RecordGizi::select('record_gizi.*', 'users.name')->join('users', 'users.id', '=', 'record_gizi.user_id');
+        $query = RecordGizi::select(
+            'record_gizi.id',
+            'record_gizi.user_id',
+            'users.name',
+            'record_gizi.recorded_by',
+            'record_gizi.weight',
+            'record_gizi.height',
+            'record_gizi.age',
+            'record_gizi.created_at',
+            'record_gizi.updated_at',
+            )->join('users', 'users.id', '=', 'record_gizi.user_id');
 
         // Check if the search parameter is provided
         if ($request->has('search')) {
@@ -26,7 +38,11 @@ class RecordGiziController extends Controller
                     ->orWhere('phone', 'like', '%' . $searchTerm . '%'); // Priority 3: phone
             });
         }
-
+        if ($request->boolean('export')) {
+            $export = new RecordGiziExport($query);
+            // return Excel::download($export, 'record-pregnant.xlsx');
+            return response()->json($query->get());
+        }
         // Paginate the results
         $users = $query->paginate(10);
 

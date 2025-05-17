@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RecordPregnantExport;
 use App\Models\RecordPregnant;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RecordPregnantController extends Controller
 {
@@ -13,7 +15,42 @@ class RecordPregnantController extends Controller
     public function index(Request $request)
     {
         // Start with a base query
-        $query = RecordPregnant::select('record_pregnants.*','users.name')->join('users','users.id','=','record_pregnants.user_id');
+        $query = RecordPregnant::select(
+            'record_pregnants.id',
+            'record_pregnants.user_id',
+            'users.name',
+            'record_pregnants.recorded_by',
+            'record_pregnants.weight',
+            'record_pregnants.height',
+            'record_pregnants.age_at_pregnancy',
+            'record_pregnants.young_pregnant',
+            'record_pregnants.old_pregnant',
+            'record_pregnants.overlong_pregnant',
+            'record_pregnants.late_pregnant',
+            'record_pregnants.early_pregnant',
+            'record_pregnants.much_child',
+            'record_pregnants.miscarriage',
+            'record_pregnants.vacum_birth',
+            'record_pregnants.retained_placenta',
+            'record_pregnants.tranfused',
+            'record_pregnants.csection',
+            'record_pregnants.anemia',
+            'record_pregnants.malaria',
+            'record_pregnants.tbc',
+            'record_pregnants.hearth_failure',
+            'record_pregnants.std',
+            'record_pregnants.hypertension',
+            'record_pregnants.twin_birth',
+            'record_pregnants.hydranion',
+            'record_pregnants.over_pregnant',
+            'record_pregnants.death_baby',
+            'record_pregnants.breech',
+            'record_pregnants.oblique',
+            'record_pregnants.preeklampsia',
+            'record_pregnants.diabetes',
+            'record_pregnants.created_at',
+            'record_pregnants.updated_at'
+        )->join('users', 'users.id', '=', 'record_pregnants.user_id');
 
         // Check if the search parameter is provided
         if ($request->has('search')) {
@@ -27,6 +64,11 @@ class RecordPregnantController extends Controller
             });
         }
 
+        if ($request->boolean('export')) {
+            $export = new RecordPregnantExport($query);
+            return Excel::download($export, 'record-pregnant.xlsx');
+            // return response()->json($query->get());
+        }
         // Paginate the results
         $users = $query->paginate(10);
 
@@ -95,7 +137,7 @@ class RecordPregnantController extends Controller
     public function show($id)
     {
         // Start with a base query
-        $query = RecordPregnant::select('record_pregnants.*','users.name')->join('users','users.id','=','record_pregnants.user_id');
+        $query = RecordPregnant::select('record_pregnants.*', 'users.name')->join('users', 'users.id', '=', 'record_pregnants.user_id');
 
         // Paginate the results
         $users = $query->find($id);
@@ -151,7 +193,7 @@ class RecordPregnantController extends Controller
         $recordPregnant->update($request->all());
 
         return redirect()->route('records-pregnant.index')
-                         ->with('success', 'Record updated successfully.');
+            ->with('success', 'Record updated successfully.');
     }
 
     /**

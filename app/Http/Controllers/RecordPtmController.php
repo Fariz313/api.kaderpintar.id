@@ -14,7 +14,19 @@ class RecordPtmController extends Controller
     public function index(Request $request)
     {
         // Start with a base query
-        $query = RecordPtm::select('records_ptm.*', 'users.name')->join('users', 'users.id', '=', 'records_ptm.user_id')->orderBy('created_at', 'desc');
+        $query = RecordPtm::select(
+            'records_ptm.id',
+            'records_ptm.user_id',
+            'users.name',
+            'records_ptm.recorded_by',
+            'records_ptm.weight',
+            'records_ptm.height',
+            'records_ptm.BP',
+            'records_ptm.BP2',
+            'records_ptm.GDS',
+            'records_ptm.GDP',
+            'records_ptm.created_at',
+            'records_ptm.updated_at')->join('users', 'users.id', '=', 'records_ptm.user_id')->orderBy('created_at', 'desc');
 
         // Check if the search parameter is provided
         if ($request->has('search')) {
