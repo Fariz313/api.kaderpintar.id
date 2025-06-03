@@ -25,7 +25,7 @@ class RecordGiziController extends Controller
             'record_gizi.age',
             'record_gizi.created_at',
             'record_gizi.updated_at',
-            'user.gender'
+            'users.gender'
             )->join('users', 'users.id', '=', 'record_gizi.user_id');
 
         // Check if the search parameter is provided
