@@ -25,6 +25,7 @@ class RecordGiziController extends Controller
             'record_gizi.age',
             'record_gizi.created_at',
             'record_gizi.updated_at',
+            'user.gender'
             )->join('users', 'users.id', '=', 'record_gizi.user_id');
 
         // Check if the search parameter is provided
@@ -40,8 +41,8 @@ class RecordGiziController extends Controller
         }
         if ($request->boolean('export')) {
             $export = new RecordGiziExport($query);
-            // return Excel::download($export, 'record-pregnant.xlsx');
-            return response()->json($query->get());
+            return Excel::download($export, 'record-pregnant.xlsx');
+            // return response()->json($query->get());
         }
         // Paginate the results
         $users = $query->paginate(10);
